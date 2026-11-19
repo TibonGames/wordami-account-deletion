@@ -1,0 +1,209 @@
+<!doctype html>
+<!--
+  Wordami – strona usuwania konta (wymóg Google Play: usuwanie konta bez aplikacji).
+  Statyczna: index.html + app.js (bez serwera, bez sekretów). Usuwanie wykonuje CloudScript PlayFab
+  (WebRequestAccountDeletion / WebContinueAccountDeletion) po weryfikacji tokenu Google po stronie serwera.
+  Konfiguracja (CONFIG na początku app.js) i publikacja: Docs/AI/ACCOUNT_DELETION.md §6.
+-->
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; connect-src https://497b9.playfabapi.com https://games.googleapis.com https://oauth2.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="index, follow">
+  <title>Wordami – usuwanie konta / Account deletion</title>
+  <meta name="description" content="Usuń konto w grze Wordami (Merry Moth Games) i powiązane dane. Delete your Wordami (Merry Moth Games) account and associated data.">
+  <style>
+    :root {
+      --bg: #1b2738; --panel: #26364d; --panel2: #2f4260; --text: #f2f4f8; --muted: #b9c3d3;
+      --accent: #f07a1a; --danger: #d9534f; --ok: #3fae6a; --border: #3d5272; --focus: #ffd27a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+    header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .brand { font-weight: 800; font-size: 28px; letter-spacing: .5px; }
+    .brand small { display: block; font-size: 14px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+    .lang button { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; font: inherit; }
+    .lang button[aria-pressed="true"] { color: var(--text); border-color: var(--accent); }
+    h1 { font-size: 26px; margin: 18px 0 8px; }
+    h2 { font-size: 20px; margin: 28px 0 8px; }
+    p, li { color: var(--text); }
+    .muted { color: var(--muted); }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin: 16px 0; }
+    .card.warn { border-color: var(--danger); background: #3a2a33; }
+    ul { padding-left: 20px; margin: 8px 0; }
+    li { margin: 4px 0; }
+    .btn { display: inline-block; border: 0; border-radius: 10px; padding: 12px 18px; font: inherit; font-weight: 700; cursor: pointer; color: #fff; background: var(--accent); }
+    .btn.secondary { background: var(--panel2); border: 1px solid var(--border); }
+    .btn.danger { background: var(--danger); }
+    .btn[disabled] { opacity: .45; cursor: not-allowed; }
+    .btn:focus-visible, input:focus-visible, .lang button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+    label.check { display: flex; gap: 10px; align-items: flex-start; margin: 12px 0; }
+    label.check input { width: 20px; height: 20px; margin-top: 3px; flex: none; }
+    input[type="text"] { width: 100%; max-width: 280px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: #fff; color: #111; font: inherit; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .progress { height: 10px; background: var(--panel2); border-radius: 6px; overflow: hidden; margin: 12px 0 6px; }
+    .progress > div { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+    .status-ok { color: var(--ok); font-weight: 700; }
+    .status-err { color: #ff8a80; font-weight: 700; }
+    [hidden] { display: none !important; }
+    footer { margin-top: 40px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); padding-top: 16px; }
+    a { color: #8cc4ff; }
+    /* Bez JavaScriptu widać obie wersje językowe; skrypt pokazuje jedną. */
+    body.js [data-lang]:not(.active-lang) { display: none; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">Wordami <small>Merry Moth Games</small></div>
+    <div class="lang" role="group" aria-label="Język / Language">
+      <button type="button" data-set-lang="pl" aria-pressed="true">Polski</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">English</button>
+    </div>
+  </header>
+
+  <!-- ============================================================ POLSKI -->
+  <div data-lang="pl" lang="pl">
+    <h1>Usuwanie konta Wordami</h1>
+    <p>Na tej stronie możesz <strong>trwale usunąć swoje konto w grze Wordami</strong> (wydawca: Merry Moth Games, Google Play) wraz ze wszystkimi powiązanymi danymi – także wtedy, gdy nie masz już zainstalowanej gry.</p>
+
+    <h2>Dwa sposoby usunięcia konta</h2>
+    <ol>
+      <li><strong>W grze:</strong> Ustawienia → <em>Usuń konto</em> → potwierdzenie.</li>
+      <li><strong>Na tej stronie</strong> (bez aplikacji) – formularz poniżej.</li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ ENGLISH -->
+  <div data-lang="en" lang="en">
+    <h1>Delete your Wordami account</h1>
+    <p>On this page you can <strong>permanently delete your account in the game Wordami</strong> (publisher: Merry Moth Games, Google Play) together with all associated data – even if the game is no longer installed.</p>
+
+    <h2>Two ways to delete your account</h2>
+    <ol>
+      <li><strong>In the game:</strong> Settings → <em>Delete account</em> → confirm.</li>
+      <li><strong>On this page</strong> (no app needed) – use the form below.</li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ FORMULARZ / FORM (stany przełącza app.js) -->
+  <section class="card" id="deletion-form" aria-live="polite">
+    <noscript>
+      <p data-lang="pl">Formularz wymaga włączonego JavaScriptu. Możesz też usunąć konto w grze (Ustawienia → Usuń konto).</p>
+      <p data-lang="en">The form requires JavaScript. You can also delete your account in the game (Settings → Delete account).</p>
+    </noscript>
+
+    <div id="step-signin" hidden>
+      <h2 style="margin-top:0" data-i18n="signinTitle"></h2>
+      <p data-i18n="signinText"></p>
+      <p class="muted" data-i18n="signinPrivacy"></p>
+      <div class="row"><button type="button" class="btn" id="btn-signin" data-i18n="signinButton"></button></div>
+    </div>
+
+    <div id="step-confirm" hidden>
+      <h2 style="margin-top:0" data-i18n="confirmTitle"></h2>
+      <p id="account-found"></p>
+      <div class="card warn">
+        <p style="margin-top:0"><strong data-i18n="confirmWarning"></strong></p>
+        <p style="margin-bottom:0" data-i18n="confirmWarningText"></p>
+      </div>
+      <label class="check"><input type="checkbox" id="chk-understand"> <span data-i18n="confirmCheckbox"></span></label>
+      <label for="confirm-word" data-i18n="confirmTypeLabel"></label>
+      <div class="row"><input type="text" id="confirm-word" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12"></div>
+      <div class="row">
+        <button type="button" class="btn danger" id="btn-delete" disabled data-i18n="confirmButton"></button>
+        <button type="button" class="btn secondary" id="btn-cancel" data-i18n="cancelButton"></button>
+      </div>
+    </div>
+
+    <div id="step-progress" hidden>
+      <h2 style="margin-top:0" data-i18n="progressTitle"></h2>
+      <div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+      <p id="progress-text" class="muted"></p>
+      <p data-i18n="progressKeepOpen"></p>
+    </div>
+
+    <div id="step-done" hidden>
+      <h2 style="margin-top:0" class="status-ok" data-i18n="doneTitle"></h2>
+      <p data-i18n="doneText"></p>
+    </div>
+
+    <div id="step-message" hidden>
+      <p id="message-text"></p>
+      <div class="row">
+        <button type="button" class="btn" id="btn-retry" data-i18n="retryButton"></button>
+        <button type="button" class="btn secondary" id="btn-restart" data-i18n="restartButton"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ POLSKI – informacje -->
+  <div data-lang="pl" lang="pl">
+    <h2>Jakie dane usuwamy</h2>
+    <ul>
+      <li>konto gracza Wordami na serwerze gry (Microsoft PlayFab) i jego powiązanie z profilem Google Play Games,</li>
+      <li>dane profilu: nick, tytuł, awatar, poziom, monety, power-upy, odblokowane awatary,</li>
+      <li>lista znajomych (także Twój wpis na listach znajomych innych graczy), wysłane i otrzymane zaproszenia do znajomych i do meczów, status online,</li>
+      <li>dane rozgrywek online: Twoje słowa, wyniki i udział w meczach oraz lobby (mecze, których byłeś gospodarzem, oraz zakończone mecze usuwamy w całości),</li>
+      <li>wpis w wyszukiwarce graczy, wynik w rankingu, statystyki zapisane na serwerze,</li>
+      <li>historia zdarzeń konta na serwerze (logowania, informacje o urządzeniu, zdarzenia techniczne).</li>
+    </ul>
+    <p>Usunięcie w grze dodatkowo czyści wszystkie dane Wordami zapisane na tym urządzeniu (postęp, statystyki, znalezione słowa, ustawienia).</p>
+
+    <h2>Czego nie usuwamy i dlaczego</h2>
+    <ul>
+      <li><strong>Profil Google Play Games</strong> – należy do Twojego konta Google i jest zarządzany przez Google (aplikacja Gry Play / ustawienia konta Google), nie przez Wordami.</li>
+      <li><strong>Dane reklamowe Google AdMob</strong> – gra wyświetla reklamy Google; dane reklamowe (np. identyfikator reklamowy urządzenia) przetwarza Google zgodnie ze swoją polityką i nie są one powiązane z Twoim kontem Wordami. Identyfikator reklamowy możesz zresetować lub usunąć w ustawieniach Androida.</li>
+      <li><strong>Dane gry na innych urządzeniach</strong>, jeśli usuwasz konto na tej stronie lub na innym telefonie – usuniesz je, odinstalowując grę albo czyszcząc dane aplikacji na tamtym urządzeniu.</li>
+    </ul>
+    <p>Po usunięciu konta nie zachowujemy danych Twojego konta w celach prawnych, rozliczeniowych ani bezpieczeństwa (gra nie ma zakupów w aplikacji ani kont płatnych). Jedynym śladem jest potwierdzenie usunięcia, które przechowujemy przez 30 dni i które zawiera wyłącznie techniczny identyfikator usuniętego konta.</p>
+
+    <h2>Ile to trwa</h2>
+    <p>Usuwanie zaczyna się natychmiast po potwierdzeniu. Dane w grze i wpisy u innych graczy są usuwane zwykle w ciągu minuty. Ostatni etap – skasowanie konta w systemach operatora serwera (Microsoft PlayFab) – wykonuje automatycznie operator: dane osobowe są najpierw usuwane z systemu głównego, a następnie z systemów pomocniczych. Całe żądanie realizujemy najpóźniej w ciągu <strong>30 dni</strong>.</p>
+    <p>Od momentu potwierdzenia konto nie może już dodawać znajomych ani grać online. Po usunięciu ponowne zalogowanie się w grze utworzy nowe, puste konto.</p>
+
+    <h2>Kontakt</h2>
+    <p>Pytania lub problemy z usunięciem konta: <a class="contact-link" href="#">—</a> (Merry Moth Games), telefon: <a href="tel:+48690203214">+48 690 203 214</a>.</p>
+  </div>
+
+  <!-- ============================================================ ENGLISH – information -->
+  <div data-lang="en" lang="en">
+    <h2>What data we delete</h2>
+    <ul>
+      <li>your Wordami player account on the game server (Microsoft PlayFab) and its link to your Google Play Games profile,</li>
+      <li>profile data: nickname, title, avatar, level, coins, power-ups, unlocked avatars,</li>
+      <li>your friends list (including your entry on other players' friends lists), sent and received friend and match invitations, online status,</li>
+      <li>online game data: your words, results and participation in matches and lobbies (matches you hosted and finished matches are deleted entirely),</li>
+      <li>your entry in player search, leaderboard score and statistics stored on the server,</li>
+      <li>the account's event history on the server (sign-ins, device information, technical events).</li>
+    </ul>
+    <p>Deleting in the game also clears all Wordami data stored on that device (progress, statistics, found words, settings).</p>
+
+    <h2>What we do not delete and why</h2>
+    <ul>
+      <li><strong>Your Google Play Games profile</strong> – it belongs to your Google Account and is managed by Google (Play Games app / Google Account settings), not by Wordami.</li>
+      <li><strong>Google AdMob advertising data</strong> – the game shows Google ads; advertising data (e.g. the device's advertising ID) is processed by Google under its own policies and is not linked to your Wordami account. You can reset or delete your advertising ID in Android settings.</li>
+      <li><strong>Game data on other devices</strong>, if you delete your account on this page or on another phone – remove it by uninstalling the game or clearing the app's data on that device.</li>
+    </ul>
+    <p>After your account is deleted, we do not keep your account data for legal, billing or security purposes (the game has no in-app purchases or paid accounts). The only trace is a deletion confirmation, kept for 30 days, which contains only the technical identifier of the deleted account.</p>
+
+    <h2>How long it takes</h2>
+    <p>Deletion starts immediately after you confirm. Game data and entries on other players' accounts are usually removed within a minute. The last stage – removal of the account from the systems of our server provider (Microsoft PlayFab) – is performed automatically by the provider: personal data is removed from the core system first and then from ancillary systems. We complete every request within <strong>30 days</strong> at the latest.</p>
+    <p>From the moment you confirm, the account can no longer add friends or play online. After deletion, signing in to the game again creates a new, empty account.</p>
+
+    <h2>Contact</h2>
+    <p>Questions or problems with account deletion: <a class="contact-link" href="#">—</a> (Merry Moth Games), phone: <a href="tel:+48690203214">+48 690 203 214</a>.</p>
+  </div>
+
+  <footer>
+    <span>Wordami · Merry Moth Games</span>
+  </footer>
+</main>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="app.js"></script>
+</body>
+</html>
