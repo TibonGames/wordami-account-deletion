@@ -1,0 +1,41 @@
+UKRAINIAN WORD LIST USED IN WORDAMI - SOURCE, LICENSE AND MODIFICATIONS
+=======================================================================
+
+Covered Code (original work)
+----------------------------
+Name     : Ukrainian spelling dictionary uk_UA (dict_uk / VESUM, Hunspell export),
+           as packaged by LibreOffice, version 6.7.5
+Authors  : Andriy Rysin, Vasyl Starko and the BrUK team (dict_uk);
+           earlier spell-uk contributors: Vladimir Yakovchuk, Oleg Podgurniy (1999);
+           Dmytro Kovalyov, Maksym Polyakov, Andriy Rysin (2001);
+           Valentyn Solomko, Volodymyr M. Lisivka (2002);
+           Andriy Rysin, Eugeniy Meshcheryakov, Dmytro Kovalyov (2005);
+           Andriy Rysin, Vasyl Starko (2006-2023).
+Source   : https://github.com/LibreOffice/dictionaries/tree/79195b017e6d70151337856c59e7d13d311d6630/uk_UA
+           (files uk_UA.dic, uk_UA.aff; downloaded 2026-11-25)
+Upstream : https://github.com/brown-uk/dict_uk/tree/v6.7.5/distr/hunspell
+
+License
+-------
+The original dictionary is available under GPL 3.0 or later, LGPL 2.1 or later,
+or the Mozilla Public License 1.1. Wordami uses it, and makes the Modifications
+below available, under the Mozilla Public License 1.1 (full text: LICENSE.txt,
+also at https://www.mozilla.org/MPL/1.1/).
+
+Modifications (made for the word game Wordami)
+---------------------------------------------
+File: uk_UAEdited.txt (inside uk_UAEdited.zip) - one word per line, UTF-8, lower case.
+  1. All word forms were generated from uk_UA.dic using the affix rules in uk_UA.aff.
+  2. Removed: proper nouns, abbreviations and acronyms, units, hyphenated forms,
+     words with characters outside the Ukrainian alphabet, and offensive vocabulary.
+  3. Apostrophes were removed from all words (e.g. "п'ять" -> "пять"), because the
+     game ignores the apostrophe.
+  4. Inside the game the list is converted into a binary search structure (trie);
+     that file is generated automatically from uk_UAEdited.txt, which is the
+     Source Code form of the Modifications.
+
+Result: 3 148 084 words.
+  uk_UAEdited.txt  80 013 814 bytes  SHA-256 0c60445fca623a3cb90678a0c132ac4eb5677d91beea362f42fc5253b7e9ad19
+  uk_UAEdited.zip   9 495 834 bytes  SHA-256 8792b894a4a6813b8821b2a769b7ada3e7056950d5b5ecf1159fb1d2a6f46a59
+
+Contact: Merry Moth Games (Wordami)

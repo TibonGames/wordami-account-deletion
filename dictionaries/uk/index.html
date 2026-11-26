@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wordami – Ukrainian word list</title>
+<style>
+  :root { --bg: #f6f7f9; --fg: #161b22; --muted: #5b6472; --line: #d9dee5; --accent: #2f55c9; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #12161c; --fg: #e8ebf0; --muted: #9aa4b3; --line: #2b323d; --accent: #8aa4ff; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, "Segoe UI", sans-serif; }
+  main { max-width: 46rem; margin: 0 auto; padding: 2.5rem max(16px, env(safe-area-inset-left)) 3rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.1rem; margin: 2rem 0 0.5rem; }
+  p, li { color: var(--fg); }
+  .muted { color: var(--muted); font-size: 0.92rem; }
+  a { color: var(--accent); }
+  .file { display: block; padding: 0.8rem 1rem; border: 1px solid var(--line); border-radius: 8px; margin: 0.5rem 0; text-decoration: none; }
+  code { font-size: 0.85em; overflow-wrap: anywhere; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ukrainian word list used in Wordami</h1>
+  <p>Wordami (a word game by Merry Moth Games) uses a modified version of the Ukrainian Hunspell dictionary
+     <strong>uk_UA 6.7.5</strong> (dict_uk / VESUM) by Andriy Rysin, Vasyl Starko, the BrUK team and the spell-uk contributors.
+     The original and the modified list are available under the <a href="https://www.mozilla.org/MPL/1.1/">Mozilla Public License 1.1</a>.</p>
+
+  <h2>Files</h2>
+  <a class="file" href="uk_UAEdited.zip"><strong>uk_UAEdited.zip</strong> – modified word list (3 148 084 words, UTF-8, one word per line), 9.5 MB</a>
+  <a class="file" href="ATTRIBUTION.txt"><strong>ATTRIBUTION.txt</strong> – source, authors and the list of modifications</a>
+  <a class="file" href="LICENSE.txt"><strong>LICENSE.txt</strong> – Mozilla Public License 1.1</a>
+
+  <h2>Modifications</h2>
+  <ul>
+    <li>All word forms generated from <code>uk_UA.dic</code> and the affix rules in <code>uk_UA.aff</code>.</li>
+    <li>Removed: proper nouns, abbreviations, hyphenated forms and offensive vocabulary.</li>
+    <li>Apostrophes removed from words (п'ять → пять).</li>
+    <li>In the game the list is converted into a binary search structure (trie).</li>
+  </ul>
+
+  <h2>Original source</h2>
+  <ul>
+    <li><a href="https://github.com/LibreOffice/dictionaries/tree/79195b017e6d70151337856c59e7d13d311d6630/uk_UA">LibreOffice/dictionaries – uk_UA</a> (files downloaded 2026-11-25)</li>
+    <li><a href="https://github.com/brown-uk/dict_uk/tree/v6.7.5/distr/hunspell">brown-uk/dict_uk v6.7.5 – Hunspell export</a></li>
+  </ul>
+
+  <hr>
+  <p class="muted" lang="uk">Українська: Wordami використовує змінену версію словника uk_UA 6.7.5 (dict_uk / VESUM). Змінений список слів доступний тут на умовах ліцензії Mozilla Public License 1.1.</p>
+  <p class="muted" lang="pl">Polski: Wordami używa zmodyfikowanej wersji słownika uk_UA 6.7.5 (dict_uk / VESUM). Zmodyfikowana lista słów jest dostępna tutaj na licencji Mozilla Public License 1.1.</p>
+</main>
+</body>
+</html>
