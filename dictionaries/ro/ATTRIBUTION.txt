@@ -1,0 +1,41 @@
+ROMANIAN WORD LIST USED IN WORDAMI - SOURCE, LICENSE AND MODIFICATIONS
+======================================================================
+
+Covered Code (original work)
+----------------------------
+Name     : Romanian Hunspell dictionary ro_RO (rospell), as packaged by LibreOffice,
+           version 3.3.10
+Copyright: Copyright (C) 2005-2013 Rospell Team, http://rospell.sourceforge.net
+Authors  : Lucian Constantin (rospell), Andrei Cipu, Sorin Sbarnea, Alexandru Szasz,
+           Ionut Paduraru, Adrian Stoica, Nicu Buculei, Catalin Francu,
+           Ionel Mugurel Ciobica (previous aspell releases), Mihai Budiu (ispell dictionary)
+Source   : https://github.com/LibreOffice/dictionaries/tree/79195b017e6d70151337856c59e7d13d311d6630/ro
+           (files ro_RO.dic, ro_RO.aff; downloaded 2026-11-26)
+Upstream : http://rospell.sourceforge.net
+
+License
+-------
+The original dictionary is available under the GNU GPL 2.0 or later, the GNU LGPL 2.1
+or later, or the Mozilla Public License 1.1 or later. Wordami uses it, and makes the
+Modifications below available, under the Mozilla Public License 1.1 (full text:
+LICENSE.txt, also at https://www.mozilla.org/MPL/1.1/).
+
+Modifications (made for the word game Wordami)
+---------------------------------------------
+File: ro_ROEdited.txt (inside ro_ROEdited.zip) - one word per line, UTF-8, lower case.
+  1. All word forms were generated from ro_RO.dic using the affix rules in ro_RO.aff
+     (including the automatic prefixes re-, ne- and auto-).
+  2. Letters ş/ţ (cedilla) were unified to ș/ț (comma below).
+  3. Removed: proper nouns, abbreviations, acronyms and units, roman numerals,
+     lower-case program names, hyphenated forms, words with digits or characters
+     outside the Romanian alphabet, corrupt entries, forms produced by faulty affix
+     rules (e.g. "draă" instead of "dragă") and offensive vocabulary.
+  4. Inside the game the list is converted into a binary search structure (trie);
+     that file is generated automatically from ro_ROEdited.txt, which is the
+     Source Code form of the Modifications.
+
+Result: 1 541 045 words.
+  ro_ROEdited.txt  21 636 612 bytes  SHA-256 c66fd4cd2a400a64c4b5cb5dab6671d6e39da7a6793d1d82822995ae9f473d6a
+  ro_ROEdited.zip   3 722 233 bytes  SHA-256 340c8dece91f583f185c258c7bf9f821aaa567b29d4686b361e6954195970941
+
+Contact: Merry Moth Games (Wordami)
